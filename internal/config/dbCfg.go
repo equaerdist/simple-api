@@ -1,7 +1,10 @@
 package config
 
 import (
+	"os"
 	"sync"
+
+	"github.com/equaerdist/simple-api/internal/domain/consts"
 )
 
 type DbCfg struct {
@@ -17,10 +20,11 @@ var (
 
 func GetDbCfg() *DbCfg {
 	once.Do(func() {
+		dbDsn := os.Getenv(consts.DB_DSN)
 		dbCfgInstance = &DbCfg{
-			Dsn: "postgresql://myuser:mypassword@localhost:6543/mydb",
-			CarTable: "car",
-			CarLogTable: "car_log",
+			Dsn: dbDsn,
+			CarTable: consts.CAR,
+			CarLogTable: consts.CAR_LOG,
 		}
 	})
 	return dbCfgInstance

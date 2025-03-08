@@ -12,6 +12,19 @@ services:
       - "6543:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  app:
+    build: .
+    container_name: my_go_app
+    depends_on:
+      - db
+    environment:
+      DB_DSN: "postgres://myuser:mypassword@db:5432/mydb?sslmode=disable"
+      PORT: 8080
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
 
 volumes:
   postgres_data:
