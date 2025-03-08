@@ -13,17 +13,17 @@ type CarGrpcService struct {
 	car.CarServiceServer
 }
 
-func (s *CarGrpcService) GetCar(ctx context.Context, req *car.GetCarRequest)  (*car.GetCarResponse, error) {
-	serv :=  services.NewCarService()
+func (s *CarGrpcService) GetCar(ctx context.Context, req *car.GetCarRequest) (*car.GetCarResponse, error) {
+	serv := services.NewCarService()
 	carRes, err := serv.GetCar(ctx, int(req.CarId))
-	
+
 	if err != nil {
 		log.Printf("Error ocurred when try get car from service: %v", err)
 		return nil, err
 	}
 
 	return &car.GetCarResponse{
-		CarId: int64(carRes.ID),
+		CarId:     int64(carRes.ID),
 		ModelName: carRes.ModelName,
 		CreatedAt: timestamppb.New(carRes.CreatedAt),
 	}, nil
@@ -41,4 +41,23 @@ func (s *CarGrpcService) CreateCar(ctx context.Context, req *car.CreateCarReques
 	return &car.CreateCarResponse{
 		CarId: int64(id),
 	}, nil
+}
+
+func (s *CarGrpcService) UpdateCar(ctx context.Context, req *car.UpdateCarRequest) (*car.UpdateCarResponse, error) {
+	serv := services.NewCarService()
+	err := serv.UpdateCar(ctx, int(req.CarId), req.ModelName)
+	if err != nil {
+		return nil, err
+	}
+
+	return &car.UpdateCarResponse{}, nil
+}
+
+func (s *CarGrpcService) DeleteCar(ctx context.Context, req *car.DeleteCarRequest) (*car.DeleteCarResponse, error) {
+	serv := services.NewCarService()
+	err := serv.DeleteCar(ctx, int(req.CarId))
+	if err != nil {
+		return nil, err
+	}
+	return &car.DeleteCarResponse{}, nil
 }

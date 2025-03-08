@@ -13,25 +13,29 @@ type CarLogRepoI struct {
 	repo.Queries
 }
 
-func NewCarLogRepo(q repo.Queries) (*CarLogRepoI) {
+func NewCarLogRepo(q repo.Queries) *CarLogRepoI {
 	return &CarLogRepoI{
 		Queries: q,
 	}
 }
 
-func(r *CarLogRepoI) Create(ctx context.Context, carId int, modelName string,
+func (r *CarLogRepoI) Create(ctx context.Context, carId int, modelName string,
 	createdAt time.Time, updatedAt time.Time) (int, error) {
-		cfg := config.GetDbCfg()
-		query := "insert into " + cfg.CarLogTable + " (car_id, model_name, created_at, updated_at) values($1, $2, $3, $4) returning id"
+	cfg := config.GetDbCfg()
+	query := "insert into " + cfg.CarLogTable + " (car_id, model_name, created_at, updated_at) values($1, $2, $3, $4) returning id"
 
-		row := r.Queries.QueryRow(ctx, query, carId, modelName, createdAt, updatedAt)
+	row, err := r.Queries.QueryRow(ctx, query, carId, modelName, createdAt, updatedAt)
+	if err != nil {
+		log.Printf("Error ocurred when exec row: %v", err)
+		return 0, err
+	}
 
-		var logId int
-		err := row.Scan(&logId)
-		if err != nil {
-			log.Printf("Error ocurred when try to insert car log: %v", err)
-			return 0, err
-		}
+	var logId int
+	err = row.Scan(&logId)
+	if err != nil {
+		log.Printf("Error ocurred when try to insert car log: %v", err)
+		return 0, err
+	}
 
-		return logId, nil
-	}	
+	return logId, nil
+}
