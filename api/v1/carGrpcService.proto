@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package car;
+
+option go_package = "github.com/equaerdist/simple-api/pkg/car";
+
+
+service CarService {
+  rpc GetCar(GetCarRequest) returns(GetCarResponse);
+  rpc CreateCar(CreateCarRequest) returns (CreateCarResponse);
+}
+
+message GetCarRequest {
+    int64 car_id = 1;
+}
+
+message GetCarResponse {
+    int64 car_id = 1;
+	string model_name = 2;
+	google.protobuf.Timestamp created_at = 3;
+}
+
+message CreateCarRequest {
+	string model_name = 2;
+}
+
+message CreateCarResponse {
+    int64 car_id = 1;
+}
